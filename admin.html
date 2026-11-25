@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#101d36">
+<title>Administration — Service d’authentification</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="config.js"></script><script defer src="admin.js"></script>
+</head>
+<body class="admin-body">
+<header class="topbar"><a class="brand" href="./"><span class="brand-mark">SA</span><span>SERVICE<br>D’AUTHENTIFICATION</span></a><a class="admin-link" href="./">← Retour au site</a></header>
+<main class="admin-main">
+  <section id="login-view" class="login-wrap">
+    <span class="eyebrow">ACCÈS RESTREINT</span><h1>Administration</h1><p class="muted">Connectez-vous avec le compte administrateur autorisé.</p>
+    <form id="login-form" class="panel"><label class="field"><span>Adresse e-mail</span><input name="email" type="email" autocomplete="username" required></label><label class="field"><span>Mot de passe</span><input name="password" type="password" autocomplete="current-password" required></label><button class="primary-btn">SE CONNECTER <span>→</span></button><p id="login-feedback" class="form-feedback" role="status"></p></form>
+  </section>
+  <section id="dashboard-view" hidden>
+    <div class="dashboard-head"><div><span class="eyebrow">ESPACE PRIVÉ</span><h1>Tableau de bord</h1><p class="muted">Demandes reçues et historique des décisions.</p></div><button id="logout-btn" class="secondary-btn">DÉCONNEXION</button></div>
+    <div class="stats" id="stats"></div>
+    <div class="tabs"><button class="tab active" data-tab="requests">Demandes</button><button class="tab" data-tab="history">Historique</button></div>
+    <div id="admin-feedback" class="form-feedback" role="status"></div>
+    <div id="requests-view"><div class="list-toolbar"><h2>Demandes reçues</h2><button id="refresh-btn" class="secondary-btn">↻ Actualiser</button></div><div id="requests-list" class="requests-list"></div></div>
+    <div id="history-view" hidden><h2>Historique des décisions</h2><div id="history-list" class="requests-list"></div></div>
+  </section>
+</main>
+<footer><span>© <span id="year"></span> Service d’authentification</span><span>Administration sécurisée</span></footer>
+</body></html>

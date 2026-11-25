@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d36">
+  <meta name="description" content="Service d'authentification des justificatifs d'achat.">
+  <title>Service d'authentification</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./"><span class="brand-mark">SA</span><span>SERVICE<br>D’AUTHENTIFICATION</span></a>
+  <a class="admin-link" href="admin.html">Espace administrateur <span aria-hidden="true">↗</span></a>
+</header>
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">VÉRIFICATION DE JUSTIFICATIFS</span>
+      <h1>SERVICE<br><span>D’AUTHENTIFICATION</span></h1>
+      <p>Soumettez votre justificatif d’achat pour une vérification manuelle et sécurisée.</p>
+      <div class="trust-line"><span class="dot"></span> Traitement confidentiel · Réponse après examen</div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="doc-card"><div class="doc-top"></div><div class="doc-line wide"></div><div class="doc-line"></div><div class="doc-seal">✓</div><div class="doc-foot">JUSTIFICATIF</div></div></div>
+  </section>
+
+  <section class="form-section">
+    <div class="section-heading"><div><span class="eyebrow">FORMULAIRE EN LIGNE</span><h2>Envoyer une demande</h2></div><span class="secure-label">⌑ Connexion sécurisée</span></div>
+    <form id="request-form" class="panel">
+      <div class="field-grid">
+        <label class="field full"><span>Adresse e-mail <b>*</b></span><input type="email" name="email" placeholder="vous@exemple.com" autocomplete="email" required maxlength="254"></label>
+        <label class="field full"><span>Montant indiqué sur le justificatif <b>*</b></span><input name="amount" type="number" min="1" max="10000000" step="0.01" placeholder="Ex. : 50" required></label>
+        <label class="field full"><span>Photo du justificatif <b>*</b></span>
+          <input id="photo" class="file-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" required>
+          <span class="upload-box"><span class="upload-icon">＋</span><strong>Ajouter une photo</strong><small>Prendre une photo avec votre téléphone ou choisir dans la galerie · JPG, PNG ou WebP · 8 Mo maximum</small><span id="file-name" class="file-name">Aucun fichier sélectionné</span></span>
+        </label>
+      </div>
+      <div class="notice"><strong>Protection de vos informations</strong><p>Avant l’envoi, masquez complètement les codes PIN, codes de recharge, numéros secrets et codes-barres qui permettraient d’utiliser le solde du ticket. Nous ne demandons jamais ces codes. La photo doit montrer uniquement les éléments non sensibles utiles à l’examen du justificatif.</p><label class="checkline"><input type="checkbox" id="redaction-confirm" required><span>Je confirme avoir masqué tous les codes permettant d’utiliser ou de recharger le ticket. <b>*</b></span></label></div>
+      <label class="checkline consent"><input type="checkbox" required><span>J’accepte que les informations transmises soient utilisées uniquement pour traiter ma demande. <b>*</b></span></label>
+      <button class="primary-btn" type="submit" id="submit-btn">ENVOYER LA DEMANDE <span>→</span></button>
+      <p class="form-feedback" id="form-feedback" role="status" aria-live="polite"></p>
+      <p class="tiny-note">Les champs marqués d’un astérisque (*) sont obligatoires.</p>
+    </form>
+  </section>
+
+  <section class="track-section">
+    <div class="section-heading"><div><span class="eyebrow">SUIVI DE DOSSIER</span><h2>Consulter une demande</h2></div></div>
+    <form id="track-form" class="panel track-panel">
+      <label class="field"><span>Référence de la demande</span><input name="reference" placeholder="SA-XXXXXXXX" required></label>
+      <label class="field"><span>Adresse e-mail utilisée</span><input name="email" type="email" placeholder="vous@exemple.com" required></label>
+      <button class="secondary-btn" type="submit">CONSULTER LE STATUT</button>
+      <div id="track-result" class="track-result" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+<footer><span>© <span id="year"></span> Service d’authentification</span><span>Vérification manuelle des justificatifs</span></footer>
+</body>
+</html>
