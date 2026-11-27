@@ -189,7 +189,7 @@
       photo.textContent = "VOIR LE JUSTIFICATIF";
 
       photo.addEventListener("click", async () => {
-        if (!request.photo_path) {
+        if (!request.proof_path) {
           say(
             $("#admin-feedback"),
             "Aucun justificatif n'est enregistré pour cette demande.",
@@ -200,7 +200,7 @@
 
         const { data, error } = await db.storage
           .from("Proof")
-          .createSignedUrl(request.photo_path, 60);
+          .createSignedUrl(request.proof_path, 60);
 
         if (error) {
           say($("#admin-feedback"), error.message, true);
@@ -287,4 +287,3 @@
   checkSession();
 })();
 
- 
