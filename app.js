@@ -1,6 +1,7 @@
 
 (() => {
   const cfg = window.APP_CONFIG || {};
+
   const ready =
     cfg.SUPABASE_URL?.startsWith("https://") &&
     !cfg.SUPABASE_URL.includes("VOTRE-PROJET") &&
@@ -8,10 +9,14 @@
     !cfg.SUPABASE_ANON_KEY.includes("VOTRE_CLE");
 
   const client = ready && window.supabase
-    ? window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY)
+    ? window.supabase.createClient(
+        cfg.SUPABASE_URL,
+        cfg.SUPABASE_ANON_KEY
+      )
     : null;
 
   const $ = (s) => document.querySelector(s);
+
   $("#year").textContent = new Date().getFullYear();
 
   const form = $("#request-form");
@@ -43,7 +48,11 @@
     e.preventDefault();
 
     if (!client) {
-      return message(feedback, "Configuration Supabase manquante.", true);
+      return message(
+        feedback,
+        "Configuration Supabase manquante.",
+        true
+      );
     }
 
     const f = file.files[0];
@@ -54,7 +63,11 @@
     }
 
     if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
-      return message(feedback, "Format non accepté. Utilisez JPG, PNG ou WEBP.", true);
+      return message(
+        feedback,
+        "Format non accepté. Utilisez JPG, PNG ou WEBP.",
+        true
+      );
     }
 
     if (!$("#redaction-confirm").checked) {
@@ -67,7 +80,10 @@
 
     submit.disabled = true;
     submit.textContent = "ENVOI EN COURS…";
+
     message(feedback, "Transmission sécurisée de votre demande…");
+
+    let uploadedPath = null;
 
     try {
       const id = crypto.randomUUID();
@@ -87,22 +103,21 @@
 
       if (upload.error) throw upload.error;
 
+      uploadedPath = path;
+
       const { data: row, error } = await client
         .from("requests")
         .insert({
           id,
           email: String(data.get("email")).trim().toLowerCase(),
           amount: Number(data.get("amount")),
-          photo_path: path,
+          proof_path: path,
           status: "pending"
         })
         .select("reference")
         .single();
 
-      if (error) {
-        await client.storage.from("Proof").remove([path]);
-        throw error;
-      }
+      if (error) throw error;
 
       try {
         await client.functions.invoke("notify-new-request", {
@@ -112,10 +127,16 @@
             created_at: new Date().toISOString()
           }
         });
-      } catch (_) {}
+      } catch (_) {
+        // La notification reste facultative.
+      }
+
+      uploadedPath = null;
 
       form.reset();
-      $("#file-name").textContent = "Aucun fichier sélectionné";
+
+      $("#file-name").textContent =
+        "Aucun fichier sélectionné";
 
       message(
         feedback,
@@ -124,14 +145,23 @@
 
     } catch (err) {
       console.error(err);
+
+      if (uploadedPath) {
+        await client.storage
+          .from("Proof")
+          .remove([uploadedPath]);
+      }
+
       message(
         feedback,
         err.message || "Une erreur est survenue. Réessayez plus tard.",
         true
       );
+
     } finally {
       submit.disabled = false;
-      submit.innerHTML = 'ENVOYER LA DEMANDE <span>→</span>';
+      submit.innerHTML =
+        'ENVOYER LA DEMANDE <span>→</span>';
     }
   });
 
@@ -142,15 +172,27 @@
     out.textContent = "";
 
     if (!client) {
-      return message(out, "Le service n’est pas encore configuré.", true);
+      return message(
+        out,
+        "Le service n’est pas encore configuré.",
+        true
+      );
     }
 
     const fd = new FormData(e.currentTarget);
 
-    const { data, error } = await client.rpc("check_request_status", {
-      p_reference: String(fd.get("reference")).trim().toUpperCase(),
-      p_email: String(fd.get("email")).trim().toLowerCase()
-    });
+    const { data, error } = await client.rpc(
+      "check_request_status",
+      {
+        p_reference: String(fd.get("reference"))
+          .trim()
+          .toUpperCase(),
+
+        p_email: String(fd.get("email"))
+          .trim()
+          .toLowerCase()
+      }
+    );
 
     if (error || !data || !data.length) {
       return message(
@@ -163,19 +205,30 @@
     const item = data[0];
 
     const labels = {
-      pending: "Votre demande est en cours de vérification.",
-      approved: "Votre ticket a été authentifié avec succès. Merci d’utiliser le Service d’authentification.",
-      rejected: "La vérification de votre demande n’a pas été validée. Veuillez contacter le service concerné."
+      pending:
+        "Votre demande est en cours de vérification.",
+
+      approved:
+        "Votre ticket a été authentifié avec succès. Merci d’utiliser le Service d’authentification.",
+
+      rejected:
+        "La vérification de votre demande n’a pas été validée. Veuillez contacter le service concerné."
     };
 
     const status = document.createElement("span");
+
     status.className = `status ${item.status}`;
+
     status.textContent = {
       pending: "En attente",
       approved: "Validée",
       rejected: "Refusée"
     }[item.status];
 
-    out.append(status, document.createTextNode(" " + labels[item.status]));
+    out.append(
+      status,
+      document.createTextNode(" " + labels[item.status])
+    );
   });
 })();
+
